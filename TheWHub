@@ -1,0 +1,179 @@
+gunNames = {"NewAssaultCarbine", "LSW", "Handgun", "NewCombatRifle", "SMG", "PistolCarbine"}
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "The W",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "By 19Phantom & 50Master",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = nil, -- Create a custom folder for your hub/game
+       FileName = "TheWHub"
+    },
+    Discord = {
+       Enabled = false,
+       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = true, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "8Pain's Key System",
+       Subtitle = "Key System",
+       Note = "No method of obtaining the key is provided",
+       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"8PainOnTop"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+ })
+
+local MainTab = Window:CreateTab("Main", 4483362458) -- Title, Image
+local WeaponSection = MainTab:CreateSection("Weapon")
+local Button1 = MainTab:CreateButton({
+    Name = "ShowAmmo",
+    Callback = function()
+        local ScreenGui = Instance.new("ScreenGui")
+        local Frame = Instance.new("Frame")
+        local Mag = Instance.new("TextLabel")
+        
+        local UserInputService = game:GetService("UserInputService")
+        
+        local dragging
+        local dragInput
+        local dragStart
+        local startPos
+        
+        local RunService = game:GetService("RunService")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        
+        local function update(input)
+            local delta = input.Position - dragStart
+            Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+        
+        Frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                dragStart = input.Position
+                startPos = Frame.Position
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+        
+        Frame.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                dragInput = input
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                update(input)
+            end
+        end)
+        
+        ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        
+        Frame.Parent = ScreenGui
+        Frame.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+        Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BorderSizePixel = 0
+        Frame.Position = UDim2.new(0.677465796, 0, 0.221238941, 0)
+        Frame.Size = UDim2.new(0, 120, 0, 32)
+        
+        Mag.Name = "Mag"
+        Mag.Parent = Frame
+        Mag.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+        Mag.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Mag.BorderSizePixel = 0
+        Mag.Size = UDim2.new(0, 120, 0, 32)
+        Mag.Font = Enum.Font.Jura
+        Mag.TextColor3 = Color3.fromRGB(0, 0, 0)
+        Mag.TextSize = 16.000
+        
+        local function updateUI()
+            local gunScript = nil
+            for _, gunName in ipairs(gunNames) do
+                local gun = player.Character:FindFirstChild(gunName)
+                if gun then
+                    gunScript = gun:FindFirstChild("GunScript_Server")
+                    if gunScript then
+                        break
+                    end
+                end
+            end
+        
+            if gunScript then
+                Mag.Text = "备弹: " .. gunScript.Mag.Value
+            else
+                Mag.Text = "备弹: N/A"
+            end
+        end
+        
+        updateUI()
+        
+        player.CharacterAdded:Connect(function(character)
+            for _, gunName in ipairs(gunNames) do
+                local gun = character:FindFirstChild(gunName)
+                if gun then
+                    local gunScript = gun:FindFirstChild("GunScript_Server")
+                    if gunScript then
+                        updateUI()
+                    end
+                end
+            end  
+        end)
+        
+        RunService.RenderStepped:Connect(function()
+            updateUI()
+        end)
+        
+    end,
+})
+
+local Button2 = MainTab:CreateButton({
+    Name = "GunModEdit",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local character = player.Character
+        
+        for _, child in ipairs(character:GetChildren()) do
+            for _, gunName in ipairs(gunNames) do
+                if child.Name == gunName then
+                    local script = child:FindFirstChild("Setting")
+                    if script then
+                        local L = require(script)
+                        L.Auto = true
+                        L.AmmoPerMag = math.huge
+                        L.Ammo = math.huge
+                        L.MaxAmmo = math.huge
+                        L.Spread = 0
+                        L.FireRate = 0.09
+                        L.BulletSpeed = 99999
+                        L.Accuracy = 999
+                        L.RecoilSpeed = 0
+                        L.RecoilDamper = 0
+                        L.RecoilRedution = 0
+                        end
+                    end
+                end
+            end
+    end,
+ })
+
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+local Button3 = MiscTab:CreateButton({
+    Name = "ESP&AIM Hack",
+    Callback = function()
+        loadstring(game:HttpGet"https://gitlab.com/te4224/Scripts/-/raw/main/Universal%20Aimbot%20N%20Esp/v2/main.lua")();
+    end,
+ })
