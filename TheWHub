@@ -157,7 +157,6 @@ local Button2 = MainTab:CreateButton({
                         L.Ammo = math.huge
                         L.MaxAmmo = math.huge
                         L.Spread = 0
-                        L.FireRate = 0.09
                         L.BulletSpeed = 99999
                         L.Accuracy = 999
                         L.RecoilSpeed = 0
