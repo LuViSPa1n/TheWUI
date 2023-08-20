@@ -194,6 +194,7 @@ local Button4 = PlayerTab:CreateButton({
                 end
             end
         end
+    end,
  })
 
  local Button4 = PlayerTab:CreateButton({
@@ -213,4 +214,5 @@ local Button4 = PlayerTab:CreateButton({
                 end
             end
         end
+    end,
  })
