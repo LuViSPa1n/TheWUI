@@ -112,9 +112,9 @@ local Button1 = MainTab:CreateButton({
             end
         
             if gunScript then
-                Mag.Text = "备弹: " .. gunScript.Mag.Value
+                Mag.Text = "子弹: " .. gunScript.Mag.Value
             else
-                Mag.Text = "备弹: N/A"
+                Mag.Text = "子弹: N/A"
             end
         end
         
@@ -175,4 +175,42 @@ local Button3 = MiscTab:CreateButton({
     Callback = function()
         loadstring(game:HttpGet"https://gitlab.com/te4224/Scripts/-/raw/main/Universal%20Aimbot%20N%20Esp/v2/main.lua")();
     end,
+ })
+local PlayerTab = Window:CreateTab("Misc", 4483362458)
+local Button4 = PlayerTab:CreateButton({
+    Name = "NoFallDmg",
+    Callback = function()
+        local lp = game:GetService("Players").LocalPlayer
+        local fall = lp.PlayerScripts["falldamagedetector - needs rewrite"]
+        
+        fall = {fall}
+        
+        for i,v in next, getgc(false) do
+            if typeof(v) == 'function' then
+                if table.find(fall,rawget(getfenv(v),"script")) then
+                    hookfunction(v,function(...)
+                    return ...
+                    end)
+                end
+            end
+        end
+ })
+
+ local Button4 = PlayerTab:CreateButton({
+    Name = "NoJumpDelay",
+    Callback = function()
+        local lp = game:GetService("Players").LocalPlayer
+        local jpcd = lp.PlayerGui.JumpCooldown
+        
+        jpcd = {jpcd}
+        
+        for i,v in next, getgc(false) do
+            if typeof(v) == 'function' then
+                if table.find(jpcd,rawget(getfenv(v),"script")) then
+                    hookfunction(v,function(...)
+                    return ...
+                    end)
+                end
+            end
+        end
  })
